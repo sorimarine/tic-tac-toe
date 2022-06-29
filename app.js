@@ -1,18 +1,7 @@
 const players = [
-  { name: "player", id: "p1", progress: newProgress() },
-  { name: "computer", id: "p2", progress: newProgress() },
 ];
 let turn = 0;
-
-// make tic tac toe play blocks
-const gameBoard = document.querySelector("#game-board");
-for (let i = 1; i <= 9; i += 1) {
-  const playBlock = document.createElement("div");
-  playBlock.classList.add("play-block", "free-block");
-  playBlock.id = `b${i}`;
-  playBlock.addEventListener("click", blockClicked, { once: true });
-  gameBoard.appendChild(playBlock);
-}
+startNewGame();
 
 // what happens when a player chooses a block
 function blockClicked() {
@@ -33,12 +22,41 @@ function checkForWin() {
     progress.cols.includes(3) ||
     progress.diag.includes(3)
   ) {
-    alert(`${player.name} wins!`);
     const freeBlocks = document.querySelectorAll(".free-block");
     for (const freeBlock of freeBlocks) {
       freeBlock.removeEventListener("click", blockClicked);
       freeBlock.classList.remove("free-block");
     }
+    displayWinner();
+  }
+}
+
+function displayWinner() {
+  const winnerMessage = document.querySelector("#winner-msg");
+  winnerMessage.textContent = `${getCurrentPlayer().name} wins!`;
+  enableNewGame();
+}
+
+function enableNewGame() {
+  const newGame = document.querySelector("#new-game");
+  newGame.disabled = false;
+  startNewGame();
+}
+
+function startNewGame() {
+  turn = 0;
+  players.length = 0;
+  players.push({name: 'player', id: 'p1', progress: newProgress()});
+  players.push({name: 'computer', id: 'p2', progress: newProgress()});
+  // make tic tac toe play blocks
+  const gameBoard = document.querySelector("#game-board");
+  gameBoard.innerHTML = "";
+  for (let i = 1; i <= 9; i += 1) {
+    const playBlock = document.createElement("div");
+    playBlock.classList.add("play-block", "free-block");
+    playBlock.id = `b${i}`;
+    playBlock.addEventListener("click", blockClicked, { once: true });
+    gameBoard.appendChild(playBlock);
   }
 }
 
