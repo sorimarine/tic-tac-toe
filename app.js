@@ -1,7 +1,6 @@
-const players = [
-];
+const players = [];
+const freeBlocks = [];
 let turn = 0;
-startNewGame();
 
 // what happens when a player chooses a block
 function blockClicked() {
@@ -11,6 +10,7 @@ function blockClicked() {
   updateProgress(this.id);
   checkForWin();
   turn += 1;
+  updateTurnOwner();
 }
 
 // checks to see whether or not current player won
@@ -34,20 +34,20 @@ function checkForWin() {
 function displayWinner() {
   const winnerMessage = document.querySelector("#winner-msg");
   winnerMessage.textContent = `${getCurrentPlayer().name} wins!`;
-  enableNewGame();
 }
 
-function enableNewGame() {
-  const newGame = document.querySelector("#new-game");
-  newGame.disabled = false;
-  startNewGame();
+function removeWinner() {
+  const winnerMessage = document.querySelector("#winner-msg");
+  winnerMessage.textContent = "";
 }
 
 function startNewGame() {
+  removeWinner();
   turn = 0;
+  freeBlocks.length = 0;
   players.length = 0;
-  players.push({name: 'player', id: 'p1', progress: newProgress()});
-  players.push({name: 'computer', id: 'p2', progress: newProgress()});
+  players.push({ name: "player", id: "p1", progress: newProgress() });
+  players.push({ name: "computer", id: "p2", progress: newProgress() });
   // make tic tac toe play blocks
   const gameBoard = document.querySelector("#game-board");
   gameBoard.innerHTML = "";
@@ -57,7 +57,9 @@ function startNewGame() {
     playBlock.id = `b${i}`;
     playBlock.addEventListener("click", blockClicked, { once: true });
     gameBoard.appendChild(playBlock);
+    freeBlocks.push(playBlock.id);
   }
+  updateTurnOwner();
 }
 
 function newProgress() {
@@ -118,6 +120,15 @@ function updateProgress(blockId) {
   }
 }
 
+function updateTurnOwner() {
+  const turnMessage = document.querySelector("#turn");
+  turnMessage.textContent = `${getCurrentPlayer().name}'s turn`;
+}
+
 function getCurrentPlayer() {
   return players[turn % 2];
 }
+
+startNewGame();
+const newGame = document.querySelector("#new-game");
+newGame.addEventListener("click", startNewGame);
